@@ -1,0 +1,18 @@
+# Ignore Python virtual environments
+venv/
+env/
+
+# Ignore compiled Python files
+__pycache__/
+*.py[cod]
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files (macOS & Windows)
+.DS_Store
+Thumbs.db
+
+# Ignore logs & temporary files
+*.log
+*.tmp

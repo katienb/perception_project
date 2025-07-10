@@ -167,8 +167,8 @@ def denoise(
 
     for i in range(num_basis):
         vh = Vh[i, :]
-        vh_hat = _less1d_denoise(vh.cuda()) if cuda else _less1d_denoise(vh)
-        vh_hat = vh_hat.reshape(1, -1)
+        #vh_hat = _less1d_denoise(vh.cuda()) if cuda else _less1d_denoise(vh)
+        vh_hat = vh.reshape(1, -1)#_hat.reshape(1, -1)
         if not cuda:
             vh_hat = vh_hat.cpu()
 

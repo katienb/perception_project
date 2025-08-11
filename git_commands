@@ -8,3 +8,6 @@ git commit -m "message"
 git push origin main
 
 git add . && git commit -m "Updated code" && git pull origin main --rebase && git push origin main
+
+
+nohup C:/Users/Katie/Documents/Katie/Code/perception_project/perception_project/Scripts/python.exe run_denoising.py > nohup_outputs/output_3.log 2>&1 &

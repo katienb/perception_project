@@ -9,15 +9,18 @@ def __less2d_solve(Z: torch.Tensor, cuda: bool) -> tuple[torch.Tensor, torch.Ten
     N, Href, Wref, k, n = Z.shape
     Z_dtype = Z.dtype
 
-    R = torch.matmul(Z, Z.transpose(-1, -2))
-    theta = torch.zeros(N, Href, Wref, k, k, dtype=Z_dtype)
+    #theta = torch.zeros(N, Href, Wref, k, k, dtype=Z_dtype)
+    device = torch.device("cuda" if cuda else "cpu")
+    R = torch.matmul(Z, Z.transpose(-1, -2)).to(device)
+    theta = torch.zeros(N, Href, Wref, k, k, dtype=Z_dtype, device=device)
 
     for j in range(k):
         idx_excl = list(range(j)) + list(range(j + 1, k))
         R_excl = R[..., idx_excl, :][..., idx_excl]
         z_j_excl = R[..., j][..., idx_excl].unsqueeze(-1)
         if cuda:
-            beta_j = torch.linalg.lstsq(R_excl.cuda(), z_j_excl.cuda()).solution.cpu()
+            #beta_j = torch.linalg.lstsq(R_excl.cuda(), z_j_excl.cuda()).solution.cpu()
+            beta_j = torch.linalg.pinv(R_excl.cuda()) @ z_j_excl.cuda()
         else:
             beta_j = torch.linalg.lstsq(R_excl, z_j_excl).solution
         theta[..., idx_excl, j] = beta_j.squeeze(-1)
@@ -30,8 +33,10 @@ def __less2d_solve(Z: torch.Tensor, cuda: bool) -> tuple[torch.Tensor, torch.Ten
 def __less2d_step(input_tensor: torch.Tensor, k: int, p: int, w: int, s: int, cuda: bool) -> torch.Tensor:
     _, C, H, W = input_tensor.size()
     grayscale_tensor = torch.mean(input_tensor, dim=1, keepdim=True) if C != 1 else input_tensor
-    indices = block_matching(grayscale_tensor, k, p, w, s)
-    Z = gather_groups(input_tensor, indices, p)
+    device = torch.device("cuda" if cuda else "cpu")
+    indices = block_matching(grayscale_tensor, k, p, w, s).to(device)
+    input_tensor = input_tensor.to(device)
+    Z = gather_groups(input_tensor, indices, p).to(device)
     Z_hat, weights = __less2d_solve(Z, cuda)
     z_hat = aggregate(Z_hat, weights, indices, H, W, p)
     return z_hat
@@ -73,7 +78,8 @@ def _less1d_denoise(input_vector: torch.Tensor, max_k: int = 1000, pat: int = 5)
     return denoised
 
 def compute_loss(y_tensor, x_hat_tensor):
-    y_list = split2d(y_tensor)
+    device = x_hat_tensor.device
+    y_list = split2d(y_tensor.to(device))
     x_hat_list = split2d(x_hat_tensor)
     loss = 0.
     valid_pairs = 0
@@ -178,6 +184,9 @@ def denoise(
             u_hat = u_hat.cuda()
 
         s = S[i].item()
+        device = torch.device("cuda" if cuda else "cpu")
+        vh_hat = vh_hat.to(device)
+        u_hat = u_hat.to(device)
         x_hat = s * torch.matmul(u_hat, vh_hat)
         X_hat = X_hat + x_hat
 

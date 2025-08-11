@@ -1,10 +1,17 @@
 # Ignore Python virtual environments
 venv/
-env/
+Lib/
+Scripts/
+share/
+Include/
+etc/
+results/
+nohup_outputs/
+#env/
 
 # Ignore compiled Python files
 __pycache__/
-*.py[cod]
+#*.py[cod]
 
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
@@ -18,5 +25,5 @@ Thumbs.db
 *.tmp
 
 # Ignore large h5 files
-perception_project/results/
+#perception_project/results/
 *.h5

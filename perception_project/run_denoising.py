@@ -57,9 +57,9 @@ def denoise_full_movie(mouse, date, file, segment_length=2000, denoise_kwargs={}
     with h5py.File(input_path, 'r') as f_in:
         mov_dset = f_in['mov']
         specs_grp_in = f_in['specs']
-        fps = specs_grp_in['fps'][()][0][0][0]
-        binning = specs_grp_in['binning'][()][0][0][0]
-        raw_mask = specs_grp_in['extra_specs']['mask'][()][0]
+        fps = specs_grp_in['fps'][()].squeeze() 
+        binning = specs_grp_in['binning'][()].squeeze() 
+        raw_mask = specs_grp_in['extra_specs']['mask'][()].squeeze() 
 
         specs_attrs = dict(specs_grp_in.attrs.items())
 
@@ -89,6 +89,7 @@ def denoise_full_movie(mouse, date, file, segment_length=2000, denoise_kwargs={}
                 segment_masked = mask_movie(segment, raw_mask, binning)
 
                 segment_denoised = run_less_denoising(segment_masked, **denoise_kwargs)
+                segment_denoised = np.flip(segment_denoised, axis=1)
                 dset_out[start:end] = segment_denoised
 
     print(f"Denoised movie saved to:\n{output_path}")
@@ -116,4 +117,4 @@ def main(mouse):
             continue  # Move to the next movie
     print("Complete!")
 
-main('cmm001mjr')
+main('rfm003mjr')

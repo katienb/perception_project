@@ -10,4 +10,7 @@ git push origin main
 git add . && git commit -m "Updated code" && git pull origin main --rebase && git push origin main
 
 
-nohup C:/Users/Katie/Documents/Katie/Code/perception_project/perception_project/Scripts/python.exe run_denoising.py > nohup_outputs/output_3.log 2>&1 &
+In bash with venv activated and in perception_project/perception_project:
+nohup C:/Users/Katie/Documents/Katie/Code/perception_project/perception_project/Scripts/python.exe -u run_denoising.py > nohup_outputs/output_denoise_rfm003.log 2>&1 &
+OR
+nohup C:/Users/Katie/Documents/Katie/Code/perception_project/perception_project/Scripts/python.exe -u dynamic_spectra_on_denoised.py > nohup_outputs/output_ds_rfm001.log 2>&1 &

@@ -27,3 +27,4 @@ Thumbs.db
 # Ignore large h5 files
 #perception_project/results/
 *.h5
+*.npy

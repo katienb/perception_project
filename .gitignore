@@ -28,3 +28,4 @@ Thumbs.db
 #perception_project/results/
 *.h5
 *.npy
+*.mp4
